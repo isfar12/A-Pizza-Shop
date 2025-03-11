@@ -96,14 +96,22 @@ public class BurgerOrderScreen {
                 stmt.executeUpdate();
 
                 JOptionPane.showMessageDialog(frame, "Burger ordered successfully! Total price: $" + totalPrice);
+                
+                // Fix: Force UI to update after switching to OrderMenu
                 frame.setContentPane(new OrderMenu(frame, userId).getPanel());
+                frame.revalidate();
+                frame.repaint();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
             }
         });
 
-        backButton.addActionListener(e -> frame.setContentPane(new OrderMenu(frame, userId).getPanel()));
-        frame.revalidate();
+        // Fix: Ensure back button refreshes UI properly
+        backButton.addActionListener(e -> {
+            frame.setContentPane(new OrderMenu(frame, userId).getPanel());
+            frame.revalidate();
+            frame.repaint();
+        });
     }
 
     public JPanel getPanel() {

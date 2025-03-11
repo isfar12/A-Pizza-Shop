@@ -53,10 +53,24 @@ public class OrderMenu {
         panel.add(buttonPanel);
 
         // Add action listeners for each button
-        pizzaOrderButton.addActionListener(e -> frame.setContentPane(new PizzaOrderScreen(frame, userId).getPanel()));
-        burgerOrderButton.addActionListener(e -> frame.setContentPane(new BurgerOrderScreen(frame, userId).getPanel()));
+        pizzaOrderButton.addActionListener(e -> {
+            frame.setContentPane(new PizzaOrderScreen(frame, userId).getPanel());
+            frame.revalidate();  // Refresh UI immediately
+            frame.repaint();
+        });
 
-        orderStatusButton.addActionListener(e -> frame.setContentPane(new OrderStatusScreen(frame, userId).getPanel()));
+        burgerOrderButton.addActionListener(e -> {
+            frame.setContentPane(new BurgerOrderScreen(frame, userId).getPanel());
+            frame.revalidate();
+            frame.repaint();
+        });
+
+        orderStatusButton.addActionListener(e -> {
+            frame.setContentPane(new OrderStatusScreen(frame, userId).getPanel());
+            frame.revalidate();
+            frame.repaint();
+        });
+
         orderHistoryButton.addActionListener(e -> fetchOrderHistory(frame, userId));
         userInfoButton.addActionListener(e -> showUserInfo(frame, userId));
     }
