@@ -43,6 +43,13 @@ public class BurgerOrderScreen {
         JCheckBox picklesCheck = new JCheckBox("Pickles ($2)");
         JCheckBox tomatoCheck = new JCheckBox("Tomato ($2)");
 
+        // Make checkboxes background transparent and text white
+        JCheckBox[] checkBoxes = {cheeseCheck, picklesCheck, tomatoCheck};
+        for (JCheckBox checkBox : checkBoxes) {
+            checkBox.setOpaque(false);
+            checkBox.setForeground(Color.WHITE);
+        }
+
         JButton orderButton = new JButton("Order Burger");
         JButton backButton = new JButton("Back");
 
@@ -74,16 +81,21 @@ public class BurgerOrderScreen {
             int pattyCount;
             try {
                 pattyCount = Integer.parseInt(pattyField.getText());
+                if (pattyCount < 0) {
+                    JOptionPane.showMessageDialog(frame, "Negative patties are not allowed. Please enter a positive number.");
+                    return; // Don't proceed
+                }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "Please enter a valid number for patties.");
                 return;
             }
-
-            int addonsPrice = (cheeseCheck.isSelected() ? 2 : 0) +
-                    (picklesCheck.isSelected() ? 2 : 0) +
-                    (tomatoCheck.isSelected() ? 2 : 0);
+        
+            int addonsPrice = (cheeseCheck.isSelected() ? 2 : 0)
+                    + (picklesCheck.isSelected() ? 2 : 0)
+                    + (tomatoCheck.isSelected() ? 2 : 0);
+        
             int totalPrice = (pattyCount * 3) + addonsPrice;
-
+        
             try (Connection conn = Database.getConnection()) {
                 String query = "INSERT INTO orders (user_id, item_type, details, total_price) VALUES (?, 'Burger', ?, ?)";
                 PreparedStatement stmt = conn.prepareStatement(query);
@@ -94,10 +106,9 @@ public class BurgerOrderScreen {
                         + ", Tomato=" + tomatoCheck.isSelected());
                 stmt.setDouble(3, totalPrice);
                 stmt.executeUpdate();
-
+        
                 JOptionPane.showMessageDialog(frame, "Burger ordered successfully! Total price: $" + totalPrice);
-                
-                // Fix: Force UI to update after switching to OrderMenu
+        
                 frame.setContentPane(new OrderMenu(frame, userId).getPanel());
                 frame.revalidate();
                 frame.repaint();
@@ -106,7 +117,7 @@ public class BurgerOrderScreen {
             }
         });
 
-        // Fix: Ensure back button refreshes UI properly
+        // Back button action
         backButton.addActionListener(e -> {
             frame.setContentPane(new OrderMenu(frame, userId).getPanel());
             frame.revalidate();
